@@ -25,6 +25,14 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        if (request.getServletPath().startsWith("/swagger-ui/") ||
+                request.getServletPath().startsWith("/v3/api-docs") ||
+                request.getServletPath().equals("/api-docs.yaml")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String headerAuthorization = request.getHeader("Authorization");
         if (headerAuthorization == null || !headerAuthorization.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

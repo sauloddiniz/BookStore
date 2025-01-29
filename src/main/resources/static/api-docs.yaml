@@ -1,0 +1,354 @@
+openapi: 3.0.0
+info:
+  title: API de Livros
+  description: API para gerenciar autores e livros
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # Indica que o header usará tokens no formato JWT
+
+  schemas:
+    AuthorRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID do autor
+        name:
+          type: string
+          description: Nome do autor
+      required:
+        - name
+
+    AuthorResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID do autor
+        name:
+          type: string
+          description: Nome do autor
+
+    AuthorAndBooksResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID do autor
+        name:
+          type: string
+          description: Nome do autor
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookResponse'
+
+    BookRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Título do livro
+        description:
+          type: string
+          description: Descrição do livro
+        category:
+          type: string
+          description: Categoria do livro
+      required:
+        - title
+        - description
+        - category
+
+    BookResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID do livro
+        title:
+          type: string
+          description: Título do livro
+        description:
+          type: string
+          description: Descrição do livro
+        category:
+          type: string
+          description: Nome da categoria do livro
+
+security:
+  - bearerAuth: [] # Aplica o esquema de autenticação (JWT) globalmente a todos os endpoints
+
+paths:
+  /authors:
+    get:
+      tags:
+        - Autores
+      summary: Lista todos os autores
+      description: Lista todos os autores cadastrados no banco de dados
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: books
+          in: query
+          required: false
+          description: Incluir os livros associados aos autores (true/false)
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Lista de autores retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/AuthorResponse'
+                    - $ref: '#/components/schemas/AuthorAndBooksResponse'
+
+    post:
+      tags:
+        - Autores
+      summary: Cria um novo autor
+      description: Cria um autor no banco de dados
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Dados do autor a ser criado
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorRequest'
+      responses:
+        '201':
+          description: Autor criado com sucesso
+          headers:
+            Location:
+              description: URL do recurso criado
+              schema:
+                type: string
+        '400':
+          description: Dados inválidos enviados
+        '401':
+          description: Token JWT ausente ou inválido
+
+  /authors/{id}:
+    get:
+      tags:
+        - Autores
+      summary: Busca um autor pelo ID
+      description: Retorna os dados de um autor com base no ID informado
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do autor a ser buscado
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Autor encontrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorResponse'
+        '404':
+          description: Autor não encontrado
+
+    put:
+      tags:
+        - Autores
+      summary: Atualiza os dados de um autor pelo ID
+      description: Permite atualizar os dados de um autor existente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do autor a ser atualizado
+          schema:
+            type: integer
+      requestBody:
+        description: Dados do autor a ser atualizado
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorRequest'
+      responses:
+        '200':
+          description: Autor atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorResponse'
+
+    delete:
+      tags:
+        - Autores
+      summary: Remove um autor pelo ID
+      description: Permite deletar um autor pelo ID no banco de dados
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do autor a ser deletado
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Autor deletado com sucesso
+
+  /authors/{authorId}/books:
+    get:
+      tags:
+        - Livros
+      summary: Lista os livros de um autor
+      description: Retorna todos os livros associados ao autor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de livros do autor retornada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorAndBooksResponse'
+
+    post:
+      tags:
+        - Livros
+      summary: Adiciona um livro a um autor
+      description: Cria um novo livro associado a um autor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: integer
+      requestBody:
+        description: Dados do livro a ser criado
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+      responses:
+        '201':
+          description: Livro criado com sucesso
+          headers:
+            Location:
+              description: URL do recurso criado
+              schema:
+                type: string
+
+  /authors/{authorId}/books/{id}:
+    get:
+      tags:
+        - Livros
+      summary: Busca um livro de um autor pelo ID
+      description: Retorna um livro associado a um autor específico
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          description: ID do livro
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Livro encontrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+
+    put:
+      tags:
+        - Livros
+      summary: Atualiza os dados de um livro pelo ID
+      description: Permite atualizar os dados de um livro existente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          description: ID do livro
+          schema:
+            type: integer
+      requestBody:
+        description: Dados do livro a ser atualizado
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+      responses:
+        '200':
+          description: Livro atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+
+    delete:
+      tags:
+        - Livros
+      summary: Remove um livro pelo ID
+      description: Permite deletar um livro associado a um autor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: integer
+        - name: id
+          in: path
+          required: true
+          description: ID do livro
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Livro deletado com sucesso

@@ -17,5 +17,7 @@ spring:
 
 springdoc:
   api-docs:
-    path: /api-docs.yaml
-    enabled: 'false'
+    enabled: false
+    path: "/v3/api-docs"
+  swagger-ui:
+    url: "/api-docs.yaml"
