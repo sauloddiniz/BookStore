@@ -71,4 +71,11 @@ public class BookEntity {
         this.category = category;
         this.author = new AuthorEntity(authorId);
     }
+
+    public BookEntity(Long id, String title, String description, Category category) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+    }
 }

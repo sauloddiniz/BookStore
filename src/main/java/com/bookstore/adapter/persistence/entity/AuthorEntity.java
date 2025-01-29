@@ -3,8 +3,8 @@ package com.bookstore.adapter.persistence.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "author", schema = "bookstore")
@@ -16,12 +16,19 @@ public class AuthorEntity implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<BookEntity> books = new HashSet<>();
+    private List<BookEntity> books = new ArrayList<>();
 
     public AuthorEntity(Long id, String name) {
         this.id = id;
         this.name = name;
     }
+
+    public AuthorEntity(Long id, String name, List<BookEntity> books) {
+        this.id = id;
+        this.name = name;
+        this.books = books;
+    }
+
 
     public AuthorEntity(Long id) {
         this.id = id;
@@ -46,11 +53,11 @@ public class AuthorEntity implements Serializable {
         this.name = name;
     }
 
-    public Set<BookEntity> getBooks() {
+    public List<BookEntity> getBooks() {
         return books;
     }
 
-    public void setBooks(Set<BookEntity> books) {
+    public void setBooks(List<BookEntity> books) {
         this.books = books;
     }
 }

@@ -1,8 +1,5 @@
 package com.bookstore.adapter.configuration;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,15 +13,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-
 @Component
 public class JwtValidationFilter extends OncePerRequestFilter {
 
+    private final JwtUtil jwtUtil;
 
-    private static final String SECRET_KEY = "chave-de-seguranca";
+    public JwtValidationFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         if (request.getServletPath().startsWith("/swagger-ui/") ||
                 request.getServletPath().startsWith("/v3/api-docs") ||
@@ -40,25 +39,23 @@ public class JwtValidationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = headerAuthorization.substring(7);
-        DecodedJWT isValid = JWT.require(Algorithm.HMAC256(SECRET_KEY))
-                .build()
-                .verify(token);
-        if (isValid.getExpiresAt().before(new java.util.Date())) {
+        boolean isValid = jwtUtil.validJwt(headerAuthorization);
+        if (!isValid) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             filterChain.doFilter(request, response);
             return;
         }
 
-        String email = JWT.decode(token).getSubject();
-        String USER = "USER";
+        String email = jwtUtil.getEmail(headerAuthorization);
+
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(email, token,
-                        Collections.singletonList(new SimpleGrantedAuthority(USER)));
+                new UsernamePasswordAuthenticationToken(email, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("USER")));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
-
 }
+
+
