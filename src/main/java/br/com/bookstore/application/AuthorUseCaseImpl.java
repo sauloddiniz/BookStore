@@ -46,7 +46,7 @@ public class AuthorUseCaseImpl implements AuthorUseCase {
     @Override
     public AuthorResponse updateAuthor(Long id, AuthorRequest authorRequest) {
         Author author = authorPersistencePort.getAuthorById(id);
-        author.setName(authorRequest.name());
+        author = new Author(author.getId(), authorRequest.name());
         author = authorPersistencePort.saveAuthor(author);
         return AuthorResponse.toResponse(author);
     }

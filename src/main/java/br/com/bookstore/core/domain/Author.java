@@ -46,7 +46,5 @@ public class Author {
             throw new ValidNameException();
         }
     }
-    public void setName(String name) {
-        this.name = name;
-    }
+
 }
