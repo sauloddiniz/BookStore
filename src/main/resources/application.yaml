@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    context-path: /bookstore-api
+    context-path: "/bookstore-api"
 spring:
   application:
     name: BookStore
@@ -27,4 +27,4 @@ springdoc:
     url: "/api-docs.yaml"
 
 jwt:
-  secre:
+  secret: "chave-de-seguranca"

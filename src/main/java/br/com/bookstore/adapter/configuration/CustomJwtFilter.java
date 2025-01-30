@@ -5,52 +5,60 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.Collections;
+
 
 @Component
-@Slf4j
 public class CustomJwtFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver resolver;
+    private final JwtUtil jwtUtil;
 
-    public CustomJwtFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+    public CustomJwtFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver, JwtUtil jwtUtil) {
         this.resolver = resolver;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String servletPath = request.getServletPath();
-        log.debug("Processing request to path: {}", servletPath);
 
         if (servletPath.startsWith("/swagger-ui/") ||
                 servletPath.startsWith("/v3/api-docs") ||
                 servletPath.equals("/api-docs.yaml")) {
-            log.debug("Request ignored for path: {}", servletPath);
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
             String token = request.getHeader("Authorization");
-
-            if (token == null || !JwtUtil.validJwt(token)) {
-                log.warn("Invalid or missing JWT token for path: {}", servletPath);
+            if (token == null || !jwtUtil.validJwt(token)) {
                 throw new JwtAuthenticationException();
             }
 
-            log.debug("Valid JWT token for path: {}", servletPath);
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(jwtUtil.getEmail(token), null,
+                            Collections.singletonList(new SimpleGrantedAuthority("SIMPLE_USER")));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             filterChain.doFilter(request, response);
 
-        } catch (JwtAuthenticationException exception) {
-            log.error("JWT authentication failed for path: {}", servletPath, exception);
+        } catch (Exception exception) {
             resolver.resolveException(request, response, null, exception);
         }
+
+
     }
 }
 

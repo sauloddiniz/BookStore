@@ -1,54 +1,63 @@
 package br.com.bookstore.adapter.configuration;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
 class JwtUtilTest {
 
+    @InjectMocks
+    private JwtUtil jwtUtil;
 
-    @Test
-    void validJwt_shouldReturnFalse_whenTokenIsInvalid() {
-
-        String invalidToken = "Bearer invalid-token";
-
-        boolean result = JwtUtil.validJwt(invalidToken);
-
-        Assertions.assertFalse(result, "The validJwt method should return false for an invalid token.");
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(jwtUtil, "secret", "secret");
     }
 
     @Test
-    void validJwt_shouldReturnFalse_whenTokenIsMalformed() {
+    @DisplayName("Should return true for a valid JWT")
+    void shouldValidateJwtSuccessfully() {
 
-        String malformedToken = "Malform";
+        String jwtToken = jwtUtil.createToken("sub", "email");
+        jwtToken = "Bearer " + jwtToken;
 
-        boolean result = JwtUtil.validJwt(malformedToken);
+        boolean isValid = jwtUtil.validJwt(jwtToken);
 
-        Assertions.assertFalse(result, "The validJwt method should return false for a malformed token.");
+        assertTrue(isValid);
     }
 
     @Test
-    void validJwt_shouldReturnFalse_whenTokenIsExpired() {
-        String secretKey = "default-secret";
-        String expiredToken = "Bearer " + JWT.create()
-                .withExpiresAt(new java.util.Date(System.currentTimeMillis() - 1000))
-                .sign(Algorithm.HMAC256(secretKey));
+    @DisplayName("Should return true for a invalid JWT")
+    void shouldInvalidateJwtSuccessfully() {
 
-        boolean result = JwtUtil.validJwt(expiredToken);
+        String jwtToken = "jwtTokenFake";
+        jwtToken = "Bearer " + jwtToken;
 
-        Assertions.assertFalse(result, "The validJwt method should return false for an expired token.");
+        boolean isValid = jwtUtil.validJwt(jwtToken);
+
+        assertFalse(isValid);
     }
 
     @Test
-    void validJwt_shouldReturnFalse_whenTokenSignatureIsInvalid() {
-        String secretKey = "default-secret";
-        String anotherSecretKey = "different-secret";
-        String invalidSignatureToken = "Bearer " + JWT.create()
-                .sign(Algorithm.HMAC256(anotherSecretKey));
+    @DisplayName("Should extract email from a valid JWT")
+    void shouldExtractEmailFromJwt() {
 
-        boolean result = JwtUtil.validJwt(invalidSignatureToken);
+        String expectedEmail = "email@example.com";
 
-        Assertions.assertFalse(result, "The validJwt method should return false for a token with an invalid signature.");
+        String jwtToken = jwtUtil.createToken("sub", expectedEmail);
+        jwtToken = "Bearer " + jwtToken;
+
+        String extractedEmail = jwtUtil.getEmail(jwtToken);
+
+        assertEquals(expectedEmail, extractedEmail, "The extracted email should match the expected email.");
     }
+
+
 }

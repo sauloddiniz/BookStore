@@ -5,12 +5,11 @@ import br.com.bookstore.adapter.persistence.entity.AuthorEntity;
 import br.com.bookstore.adapter.persistence.entity.BookEntity;
 import br.com.bookstore.adapter.persistence.entity.Category;
 import br.com.bookstore.adapter.persistence.repository.AuthorRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -24,8 +23,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
 @AutoConfigureMockMvc
+@SpringBootTest
 class AuthorControllerTest {
 
     @Autowired
@@ -34,20 +33,15 @@ class AuthorControllerTest {
     @MockitoBean
     private AuthorRepository authorRepository;
 
-    private MockedStatic<JwtUtil> jwtUtilMock;
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp() {
-        jwtUtilMock = mockStatic(JwtUtil.class);
-        jwtUtilMock.when(() -> JwtUtil.validJwt(anyString()))
+        when(jwtUtil.validJwt(anyString()))
                 .thenReturn(true);
-        jwtUtilMock.when(() -> JwtUtil.getEmail(anyString()))
+        when(jwtUtil.getEmail(anyString()))
                 .thenReturn("my_email");
-    }
-
-    @AfterEach
-    void tearDown() {
-        jwtUtilMock.close();
     }
 
     @Test
@@ -60,7 +54,7 @@ class AuthorControllerTest {
 
         mockMvc.perform(get("/authors?books=false")
                         .header("Authorization", "Bearer my_token_is_valid")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].name").value("Viúva Negra"))
@@ -243,7 +237,7 @@ class AuthorControllerTest {
         Long authorId = 99L;
 
         mockMvc.perform(delete("/authors/{id}", authorId))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     private static List<AuthorEntity> getAuthorEntityList() {

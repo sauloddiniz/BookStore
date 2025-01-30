@@ -6,11 +6,9 @@ import br.com.bookstore.adapter.persistence.entity.BookEntity;
 import br.com.bookstore.adapter.persistence.entity.Category;
 import br.com.bookstore.adapter.persistence.repository.AuthorRepository;
 import br.com.bookstore.adapter.persistence.repository.BookRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +24,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,20 +41,15 @@ class BookControllerTest {
     @MockitoBean
     private BookRepository bookRepository;
 
-    private MockedStatic<JwtUtil> jwtUtilMock;
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp() {
-        jwtUtilMock = mockStatic(JwtUtil.class);
-        jwtUtilMock.when(() -> JwtUtil.validJwt(anyString()))
+        when(jwtUtil.validJwt(anyString()))
                 .thenReturn(true);
-        jwtUtilMock.when(() -> JwtUtil.getEmail(anyString()))
+        when(jwtUtil.getEmail(anyString()))
                 .thenReturn("my_email");
-    }
-
-    @AfterEach
-    void tearDown() {
-        jwtUtilMock.close();
     }
 
     @Test
