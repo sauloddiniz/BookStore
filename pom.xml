@@ -11,7 +11,7 @@
     <groupId>com.bookstore</groupId>
     <artifactId>com.bookstore</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>com.bookstore</name>
+    <name>BookStore</name>
     <description>Projeto admin books</description>
     <url/>
     <licenses>

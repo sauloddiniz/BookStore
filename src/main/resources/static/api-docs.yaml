@@ -4,6 +4,10 @@ info:
   description: API para gerenciar autores e livros
   version: 1.0.0
 
+servers:
+  - url: http://localhost:8080/bookstore-api
+    description: API de Livros no ambiente local
+
 components:
   securitySchemes:
     bearerAuth:
