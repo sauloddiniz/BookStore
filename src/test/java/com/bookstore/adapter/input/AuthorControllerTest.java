@@ -1,7 +1,6 @@
 package com.bookstore.adapter.input;
 
 import com.bookstore.adapter.configuration.JwtUtil;
-import com.bookstore.adapter.input.dto.AuthorRequest;
 import com.bookstore.adapter.persistence.entity.AuthorEntity;
 import com.bookstore.adapter.persistence.entity.BookEntity;
 import com.bookstore.adapter.persistence.entity.Category;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthorControllerTest {
+class AuthorControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

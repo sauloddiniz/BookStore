@@ -2,9 +2,11 @@ package com.bookstore.adapter.persistence.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "book", schema = "bookstore")
-public class BookEntity {
+public class BookEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

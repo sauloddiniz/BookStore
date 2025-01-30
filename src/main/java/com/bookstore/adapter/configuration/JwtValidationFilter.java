@@ -16,12 +16,6 @@ import java.util.Collections;
 @Component
 public class JwtValidationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
-
-    public JwtValidationFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
-
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -39,14 +33,14 @@ public class JwtValidationFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean isValid = jwtUtil.validJwt(headerAuthorization);
+        boolean isValid = JwtUtil.validJwt(headerAuthorization);
         if (!isValid) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             filterChain.doFilter(request, response);
             return;
         }
 
-        String email = jwtUtil.getEmail(headerAuthorization);
+        String email = JwtUtil.getEmail(headerAuthorization);
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(email, null,
