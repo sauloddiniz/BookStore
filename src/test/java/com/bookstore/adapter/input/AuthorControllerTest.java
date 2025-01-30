@@ -237,6 +237,15 @@ class AuthorControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @DisplayName("Should Return 401 Unauthorized When Authorization Header Is Missing")
+    void shouldReturnUnauthorizedWhenAuthorizationHeaderIsMissing() throws Exception {
+        Long authorId = 99L;
+
+        mockMvc.perform(delete("/authors/{id}", authorId))
+                .andExpect(status().isForbidden());
+    }
+
     private static List<AuthorEntity> getAuthorEntityList() {
         return List.of(
                 new AuthorEntity(8L, "Viúva Negra",

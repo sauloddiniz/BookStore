@@ -1,9 +1,6 @@
 package com.bookstore.configurartion;
 
-import com.bookstore.core.exception.AuthorNotFoundException;
-import com.bookstore.core.exception.BookNotFoundException;
-import com.bookstore.core.exception.ValidNameException;
-import com.bookstore.core.exception.ValidTitleException;
+import com.bookstore.core.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +34,12 @@ public class ExceptionHandlerMainConfig {
 
     @ExceptionHandler(ValidNameException.class)
     public ResponseEntity<Object> validNameException(ValidNameException ex, HttpServletRequest request) {
+        Map<String, Object> body = extractErrorInfo(ex, request);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CategoryNotRegisterOrNullException.class)
+    public ResponseEntity<Object> categoryNotRegisterOrNullException(CategoryNotRegisterOrNullException ex, HttpServletRequest request) {
         Map<String, Object> body = extractErrorInfo(ex, request);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

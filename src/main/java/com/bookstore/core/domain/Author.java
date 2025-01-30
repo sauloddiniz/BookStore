@@ -15,22 +15,13 @@ public class Author {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Book> getBooks() {
         return books;
     }
-
 
     public Author(Long id, String name) {
         this.id = id;
@@ -45,9 +36,6 @@ public class Author {
         this.books = books;
     }
 
-    public Author() {
-    }
-
     public void setOneBook(Book book) {
         this.books = new ArrayList<>();
         this.books.add(book);
@@ -57,5 +45,8 @@ public class Author {
         if (name == null || name.isEmpty()) {
             throw new ValidNameException();
         }
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 }

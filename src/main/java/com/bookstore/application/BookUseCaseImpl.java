@@ -9,6 +9,7 @@ import com.bookstore.adapter.persistence.entity.Category;
 import com.bookstore.core.domain.Author;
 import com.bookstore.core.domain.Book;
 import com.bookstore.core.exception.BookNotFoundException;
+import com.bookstore.core.exception.CategoryNotRegisterOrNullException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -54,9 +55,8 @@ public class BookUseCaseImpl implements BookUseCase {
     public BookResponse updateBook(Long authorId, Long id, BookRequest bookRequest) {
         Author author = authorPersistencePort.getAuthorById(authorId);
         Book book = getBookByAuthorAndId(id, author);
-        book.setTitle(bookRequest.title());
-        book.setDescription(bookRequest.description());
-        book.setCategory(Category.valueOf(bookRequest.category().toUpperCase()));
+        book = new Book(book.getId(), bookRequest.title(), bookRequest.description(),
+                Category.valueOf(bookRequest.category().toUpperCase()), author);
         book = bookPersistencePort.saveBook(book);
         return BookResponse.toResponse(book);
     }
@@ -82,10 +82,10 @@ public class BookUseCaseImpl implements BookUseCase {
                     try {
                         return Category.valueOf(cat);
                     } catch (IllegalArgumentException e) {
-                        throw new IllegalArgumentException("Invalid category: " + name);
+                        throw new CategoryNotRegisterOrNullException("Invalid category: " + name);
                     }
                 })
-                .orElseThrow(() -> new IllegalArgumentException("Category cannot be null"));
+                .orElseThrow(() -> new CategoryNotRegisterOrNullException("Category cannot be null"));
     }
 
 
