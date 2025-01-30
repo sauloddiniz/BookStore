@@ -17,7 +17,6 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 import java.util.Collections;
 
-
 @Component
 public class CustomJwtFilter extends OncePerRequestFilter {
 
@@ -57,8 +56,7 @@ public class CustomJwtFilter extends OncePerRequestFilter {
         } catch (Exception exception) {
             resolver.resolveException(request, response, null, exception);
         }
-
-
+        
     }
 }
 

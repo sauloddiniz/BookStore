@@ -116,7 +116,8 @@ paths:
                   oneOf:
                     - $ref: '#/components/schemas/AuthorResponse'
                     - $ref: '#/components/schemas/AuthorAndBooksResponse'
-
+        '401':
+          description: Token JWT ausente ou inválido
     post:
       tags:
         - Autores
@@ -166,9 +167,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorResponse'
+        '401':
+          description: Token JWT ausente ou inválido
         '404':
           description: Autor não encontrado
-
     put:
       tags:
         - Autores
@@ -215,6 +217,8 @@ paths:
       responses:
         '204':
           description: Autor deletado com sucesso
+        '401':
+          description: Token JWT ausente ou inválido
 
   /authors/{authorId}/books:
     get:
@@ -238,6 +242,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorAndBooksResponse'
+        '401':
+          description: Token JWT ausente ou inválido
 
     post:
       tags:
@@ -268,6 +274,8 @@ paths:
               description: URL do recurso criado
               schema:
                 type: string
+        '401':
+          description: Token JWT ausente ou inválido
 
   /authors/{authorId}/books/{id}:
     get:
@@ -297,6 +305,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookResponse'
+        '401':
+          description: Token JWT ausente ou inválido
 
     put:
       tags:
@@ -332,6 +342,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookResponse'
+        '401':
+          description: Token JWT ausente ou inválido
 
     delete:
       tags:
@@ -356,3 +368,5 @@ paths:
       responses:
         '204':
           description: Livro deletado com sucesso
+        '401':
+          description: Token JWT ausente ou inválido
