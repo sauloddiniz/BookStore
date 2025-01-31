@@ -81,11 +81,15 @@ Ao habilitar o JWT, um token JWT válido deverá ser enviado no cabeçalho `Auth
    mvn clean package
    ```
 
-4. Execute o **JAR** gerado:
-   ```bash
-   java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar
-   ```
-
+4. Execute o **JAR** gerado e escolha habilitar ou desabilitar a autenticação JWT, conforme necessário. Por exemplo:
+   - **Com autenticação JWT habilitada**:
+     ```bash
+     java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar --jwt.enabled=true
+     ```
+   - **Com autenticação JWT desabilitada**:
+     ```bash
+     java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar --jwt.enabled=false
+     ```
 5. Ao realizar requisições, não esqueça de incluir o cabeçalho `Authorization`:
     - Com JWT desabilitado: **Qualquer valor será aceito no cabeçalho.**
     - Com JWT habilitado: **Um token JWT válido deve ser enviado.**
