@@ -2,7 +2,7 @@
 
 Essa API é responsável por gerenciar e administrar dados de autores e livros armazenados no banco de dados **PostgreSQL**. Ela expõe endpoints para operações como criação, atualização, deleção e consulta de autores e seus livros. Além disso, garante segurança utilizando autenticação via token JWT, permitindo acesso seguro a partir de requisições HTTP externas.
 
-A autenticação JWT pode ser opcional, dependendo da utilização da propriedade `jwt.enabled`.
+A autenticação JWT está desabilitada por padrão, mas pode ser habilitada alterando o valor da variável `JWT_ENABLED` no arquivo `docker-compose.yml`.
 
 ---
 
@@ -14,67 +14,90 @@ Antes de começar, certifique-se de que o seu ambiente possui as seguintes ferra
 
 - **Java 21**: Certifique-se de ter o JDK (Java Development Kit) 21 instalado no sistema. [Guia de instalação do Java](https://openjdk.org/install/).
 - **Maven**: Necessário para o gerenciamento de dependências e compilação do projeto. [Guia de instalação do Maven](https://maven.apache.org/install.html).
-- **Docker**: Usado para configurar o banco de dados **PostgreSQL**. [Guia de instalação do Docker](https://docs.docker.com/get-docker/).
+- **Docker e Docker Compose**: Usados para configurar o banco de dados **PostgreSQL** e executar a aplicação. [Guia de instalação do Docker](https://docs.docker.com/get-docker/).
 
 ---
 
-### Executar a API
+### Executando a aplicação com `docker-compose`
 
-1. No diretório raiz do projeto, inicie o container do **PostgreSQL**:
-   ```bash
-   docker-compose -f docker-compose.local.yaml up
-   ```
+Para executar a aplicação e todas as suas dependências, como o banco de dados **PostgreSQL**, utilize o comando:
 
-2. Execute a aplicação:
+```bash
+docker-compose up
+```
+
+Isso iniciará:
+1. O container da aplicação (`app`).
+2. O container do banco de dados PostgreSQL (`bookstore-db`).
+
+#### Configuração padrão
+
+- **JWT desabilitado**: Por padrão, a validação de tokens JWT está desabilitada (configuração `JWT_ENABLED: false` no arquivo `docker-compose.yml`). Isso significa que nenhuma validação será feita em tokens JWT ao realizar requisições.
+
+---
+
+### Habilitando o JWT
+
+Caso precise habilitar o JWT, siga os passos abaixo:
+
+1. Abra o arquivo `docker-compose.yml`.
+2. Encontre a variável de ambiente `JWT_ENABLED` na seção `app -> environment`.
+3. Altere o valor de `false` para `true`. Por exemplo:
+
+```yaml
+environment:
+  JWT_ENABLED: true
+```
+
+4. Reinicie os containers para aplicar a mudança:
+
+```bash
+docker-compose down && docker-compose up
+```
+
+---
+
+### Acessando a aplicação
+
+Com a aplicação em execução, você pode acessar os seguintes pontos principais:
+
+- **API principal**: [http://localhost:8080](http://localhost:8080)
+- **Documentação Swagger**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+---
+
+### Executando manualmente (sem Docker)
+
+1. Certifique-se de que o PostgreSQL esteja em execução e configure o `application.properties` ou `application.yml` com os dados de acesso ao banco.
+2. Para rodar a aplicação localmente com o Maven:
    ```bash
    mvn spring-boot:run
    ```
 
-   Este comando iniciará a aplicação utilizando o banco de dados configurado no Docker.
-
-#### Executando sem validação de JWT
-Para desabilitar a validação de tokens JWT durante a execução da aplicação (útil para testes ou requisições não autenticadas), use a propriedade `jwt.enabled=false`. Quando essa propriedade estiver configurada:
-
-- Qualquer valor no cabeçalho `Authorization` será aceito.
-- Nenhuma validação será feita no token JWT.
-
-Exemplo de execução:
-```bash
-mvn spring-boot:run -Djwt.enabled=false
-```
-
-Ou, se desejar executar diretamente um JAR gerado:
-
-1. Crie o JAR do projeto:
+3. Para criar o JAR da aplicação:
    ```bash
    mvn clean package
    ```
 
-2. Execute o JAR desabilitando o JWT:
+4. Execute o JAR:
    ```bash
-   java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar --jwt.enabled=false
+   java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar
    ```
-
-Ao fazer requisições, adicione qualquer valor no cabeçalho `Authorization`:
-```http
-Authorization: test-token
-```
 
 ---
 
 ### Documentação dos Endpoints
 
-Com o projeto em execução, acesse a documentação da API no **Swagger** através da seguinte URL:
+Com a aplicação em execução, a documentação da API estará disponível através do **Swagger**:
 
 - **Ambiente local**:
-    - [Swagger UI - Local](http://localhost:8080/bookstore-api/swagger-ui/index.html)
+   - [Swagger UI - Local](http://localhost:8080/swagger-ui/index.html)
 
 ---
 
 ### Observações
 
 - Certifique-se de que o `JAVA_HOME` esteja configurado corretamente no sistema para que o Maven funcione sem problemas.
-- O arquivo `docker-compose.yaml` deve conter as configurações apropriadas para o PostgreSQL (como nome da base de dados, usuário, senha e porta).
 - Caso tenha dúvidas ou dificuldades em algum ponto, consulte a [documentação do Maven](https://maven.apache.org/guides/index.html), [documentação do Docker](https://docs.docker.com/) ou [documentação do PostgreSQL](https://www.postgresql.org/docs/).
 
 ---

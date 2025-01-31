@@ -8,3 +8,5 @@ EXPOSE 8080
 
 ENTRYPOINT ["java", "-Xms512m", "-Xmx1g", "-jar", "app.jar"]
 
+
+
