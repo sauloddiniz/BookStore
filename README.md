@@ -25,11 +25,8 @@ A aplicação utiliza diretamente o banco de dados **PostgreSQL**, configurado p
 
 1. No diretório raiz do projeto, inicie o container do **PostgreSQL**:
    ```bash
-   docker-compose up
+   docker-compose -f docker-compose.local.yaml up
    ```
-
-   O arquivo `docker-compose.yaml` deve estar configurado corretamente com os detalhes do banco de dados (porta, usuário, senha, etc.).
-
 2. Execute a aplicação:
    ```bash
    mvn spring-boot:run
