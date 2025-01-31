@@ -33,6 +33,12 @@ Isso iniciará:
 #### Configuração padrão
 
 - **JWT desabilitado**: Por padrão, a validação de tokens JWT está desabilitada (configuração `JWT_ENABLED: false` no arquivo `docker-compose.yml`). Isso significa que nenhuma validação será feita em tokens JWT ao realizar requisições.
+- **Cuidado com o cabeçalho `Authorization`**: Mesmo com o JWT desabilitado, **é obrigatório enviar algum valor no cabeçalho `Authorization`** durante as requisições à API.
+
+Exemplo:
+```http
+Authorization: qualquer-valor
+```
 
 ---
 
@@ -55,16 +61,8 @@ environment:
 docker-compose down && docker-compose up
 ```
 
----
+Ao habilitar o JWT, um token JWT válido deverá ser enviado no cabeçalho `Authorization` para acessar os recursos protegidos. Tokens inválidos ou ausentes resultam em erro de autenticação.
 
-### Acessando a aplicação
-
-Com a aplicação em execução, você pode acessar os seguintes pontos principais:
-
-- **API principal**: [http://localhost:8080](http://localhost:8080)
-- **Documentação Swagger**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
-
----
 
 ### Executando manualmente (sem Docker)
 
@@ -84,6 +82,10 @@ Com a aplicação em execução, você pode acessar os seguintes pontos principa
    java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar
    ```
 
+5. Ao realizar requisições, não esqueça de incluir o cabeçalho `Authorization`:
+    - Com JWT desabilitado: **Qualquer valor será aceito no cabeçalho.**
+    - Com JWT habilitado: **Um token JWT válido deve ser enviado.**
+
 ---
 
 ### Documentação dos Endpoints
@@ -91,7 +93,7 @@ Com a aplicação em execução, você pode acessar os seguintes pontos principa
 Com a aplicação em execução, a documentação da API estará disponível através do **Swagger**:
 
 - **Ambiente local**:
-   - [Swagger UI - Local](http://localhost:8080/swagger-ui/index.html)
+    - [Swagger UI - Local](http://localhost:8080/bookstore-api/swagger-ui/index.html)
 
 ---
 
