@@ -57,7 +57,7 @@ Authorization: test-token
 Com o projeto em execução, acesse a documentação da API no **Swagger** através da seguinte URL:
 
 - **Ambiente local**:
-   - [Swagger UI - Local](http://localhost:8080/swagger-ui/index.html)
+   - [Swagger UI - Local](http://localhost:8080/bookstore-api/swagger-ui/index.html)
 
 ---
 
