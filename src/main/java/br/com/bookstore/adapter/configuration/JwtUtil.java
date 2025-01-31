@@ -17,6 +17,9 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${jwt.enabled}")
+    private boolean isEnabled;
+
     public String createToken(String sub, String email) {
         return JWT.create()
                 .withSubject(sub)
@@ -27,6 +30,9 @@ public class JwtUtil {
     }
 
     public boolean validJwt(String token) {
+        if (!isEnabled) {
+            return true;
+        }
         try {
             token = token.substring(7);
             JWT.require(Algorithm.HMAC256(secret))
@@ -39,6 +45,9 @@ public class JwtUtil {
     }
 
     public String getEmail(String token) {
+        if (!isEnabled) {
+            return "email_fake@email_fake.com";
+        }
         DecodedJWT decodedJWT = decode(token);
         return decodedJWT.getClaim("email").asString();
     }

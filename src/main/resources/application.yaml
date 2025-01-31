@@ -28,3 +28,4 @@ springdoc:
 
 jwt:
   secret: "chave-de-seguranca"
+  enabled: true
