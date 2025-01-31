@@ -20,13 +20,11 @@ Antes de começar, certifique-se de que o seu ambiente possui as seguintes ferra
 
 ### Executar a API
 
-#### Ambiente único de execução
-A aplicação utiliza diretamente o banco de dados **PostgreSQL**, configurado por meio do Docker. Não há perfis separados (como dev, prod), apenas configurações específicas para o ambiente.
-
 1. No diretório raiz do projeto, inicie o container do **PostgreSQL**:
    ```bash
    docker-compose -f docker-compose.local.yaml up
    ```
+
 2. Execute a aplicação:
    ```bash
    mvn spring-boot:run
@@ -45,6 +43,18 @@ Exemplo de execução:
 mvn spring-boot:run -Djwt.enabled=false
 ```
 
+Ou, se desejar executar diretamente um JAR gerado:
+
+1. Crie o JAR do projeto:
+   ```bash
+   mvn clean package
+   ```
+
+2. Execute o JAR desabilitando o JWT:
+   ```bash
+   java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar --jwt.enabled=false
+   ```
+
 Ao fazer requisições, adicione qualquer valor no cabeçalho `Authorization`:
 ```http
 Authorization: test-token
@@ -52,12 +62,12 @@ Authorization: test-token
 
 ---
 
-### Documentação dos Controladores
+### Documentação dos Endpoints
 
 Com o projeto em execução, acesse a documentação da API no **Swagger** através da seguinte URL:
 
 - **Ambiente local**:
-   - [Swagger UI - Local](http://localhost:8080/bookstore-api/swagger-ui/index.html)
+    - [Swagger UI - Local](http://localhost:8080/bookstore-api/swagger-ui/index.html)
 
 ---
 

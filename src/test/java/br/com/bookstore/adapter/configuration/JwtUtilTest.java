@@ -19,6 +19,7 @@ class JwtUtilTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(jwtUtil, "secret", "secret");
+        ReflectionTestUtils.setField(jwtUtil, "isEnabled", true);
     }
 
     @Test
