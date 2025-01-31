@@ -13,7 +13,7 @@ public class BookMapper {
     public static Book toBook(BookEntity bookEntity) {
         return new Book(bookEntity.getId(), bookEntity.getTitle(), bookEntity.getDescription(), bookEntity.getCategory(),
                 Optional.ofNullable(bookEntity.getAuthor())
-                        .map(AuthorMapper::toModelAndBookIsNull)
+                        .map(AuthorMapper::toModelAndBookAndNameIsNull)
                         .orElse(null));
     }
 

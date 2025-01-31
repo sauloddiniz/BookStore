@@ -30,11 +30,12 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String servletPath = request.getServletPath();
 
-        if (servletPath.startsWith("/swagger-ui/") ||
-                servletPath.startsWith("/v3/api-docs") ||
-                servletPath.equals("/api-docs.yaml")) {
+        final String requestURI = request.getRequestURI();
+
+        if (requestURI.startsWith("/swagger-ui/")
+                || requestURI.startsWith("/v3/api-docs")
+                || requestURI.equals("/api-docs.yaml")) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -22,7 +22,7 @@ public class AuthorMapper {
                         .orElse(null));
     }
 
-    public static Author toModelAndBookIsNull(AuthorEntity authorEntity) {
-        return new Author(authorEntity.getId(), authorEntity.getName(),null);
+    public static Author toModelAndBookAndNameIsNull(AuthorEntity authorEntity) {
+        return new Author(authorEntity.getId());
     }
 }

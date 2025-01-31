@@ -29,6 +29,10 @@ public class Author {
         this.name = name;
     }
 
+    public Author(Long id) {
+        this.id = id;
+    }
+
     public Author(Long id, String name, List<Book> books) {
         this.id = id;
         validName(name);

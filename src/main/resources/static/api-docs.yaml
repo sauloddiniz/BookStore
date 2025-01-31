@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: API de Livros
-  description: API para gerenciar autores e livros
+  title: "API de Gerenciamento de Autores e Livros"
+  description: "Essa API é responsável por gerenciar e administrar dados de autores e livros armazenados no banco de dados. Ela expõe endpoints para operações como criação, atualização, deleção e consulta de autores e seus livros. Além disso, garante segurança utilizando autenticação via token JWT, permitindo acesso seguro a partir de requisições HTTP externas."
   version: 1.0.0
 
 servers:
