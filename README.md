@@ -64,20 +64,24 @@ docker-compose down && docker-compose up
 Ao habilitar o JWT, um token JWT válido deverá ser enviado no cabeçalho `Authorization` para acessar os recursos protegidos. Tokens inválidos ou ausentes resultam em erro de autenticação.
 
 
-### Executando manualmente (sem Docker)
+### Executando manualmente (dependência do Docker local)
 
-1. Certifique-se de que o PostgreSQL esteja em execução e configure o `application.properties` ou `application.yml` com os dados de acesso ao banco.
-2. Para rodar a aplicação localmente com o Maven:
+1. Certifique-se de que o **PostgreSQL** esteja configurado localmente ou inicie o banco de dados utilizando o Docker:
+   ```bash
+   docker-compose -f docker-compose.local.yaml up
+   ```
+
+2. Para rodar a aplicação localmente com o **Maven**:
    ```bash
    mvn spring-boot:run
    ```
 
-3. Para criar o JAR da aplicação:
+3. Para criar o **JAR** da aplicação:
    ```bash
    mvn clean package
    ```
 
-4. Execute o JAR:
+4. Execute o **JAR** gerado:
    ```bash
    java -jar ./target/com.bookstore-0.0.1-SNAPSHOT.jar
    ```
