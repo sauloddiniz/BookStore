@@ -1,11 +1,12 @@
 package br.com.bookstore.configurartion;
 
 import br.com.bookstore.core.exception.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,50 +16,50 @@ import java.util.Map;
 public class ExceptionHandlerMain {
 
     @ExceptionHandler(AuthorNotFoundException.class)
-    public ResponseEntity<Object> authorNotFoundException(AuthorNotFoundException ex, HttpServletRequest request) {
-        Map<String, Object> body = extractErrorInfo(ex, request);
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public Mono<Void> handleAuthorNotFoundException(AuthorNotFoundException ex, ServerWebExchange exchange) {
+        return buildResponse(exchange, HttpStatus.NOT_FOUND, ex);
     }
 
     @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<Object> bookNotFoundException(BookNotFoundException ex, HttpServletRequest request) {
-        Map<String, Object> body = extractErrorInfo(ex, request);
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public Mono<Void> handleBookNotFoundException(BookNotFoundException ex, ServerWebExchange exchange) {
+        return buildResponse(exchange, HttpStatus.NOT_FOUND, ex);
     }
 
     @ExceptionHandler(ValidTitleException.class)
-    public ResponseEntity<Object> validTitleException(ValidTitleException ex, HttpServletRequest request) {
-        Map<String, Object> body = extractErrorInfo(ex, request);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    public Mono<Void> handleValidTitleException(ValidTitleException ex, ServerWebExchange exchange) {
+        return buildResponse(exchange, HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(ValidNameException.class)
-    public ResponseEntity<Object> validNameException(ValidNameException ex, HttpServletRequest request) {
-        Map<String, Object> body = extractErrorInfo(ex, request);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    public Mono<Void> handleValidNameException(ValidNameException ex, ServerWebExchange exchange) {
+        return buildResponse(exchange, HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(CategoryNotRegisterOrNullException.class)
-    public ResponseEntity<Object> categoryNotRegisterOrNullException(CategoryNotRegisterOrNullException ex, HttpServletRequest request) {
-        Map<String, Object> body = extractErrorInfo(ex, request);
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    public Mono<Void> handleCategoryNotRegisterOrNullException(CategoryNotRegisterOrNullException ex,
+                                                               ServerWebExchange exchange) {
+        return buildResponse(exchange, HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(JwtAuthenticationException.class)
-    public ResponseEntity<Object> jwtAuthenticationException(JwtAuthenticationException ex, HttpServletRequest request) {
-        Map<String, Object> body = extractErrorInfo(ex, request);
-        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    public Mono<Void> handleJwtAuthenticationException(JwtAuthenticationException ex, ServerWebExchange exchange) {
+        return buildResponse(exchange, HttpStatus.UNAUTHORIZED, ex);
     }
 
-    private static Map<String, Object> extractErrorInfo(Exception ex, HttpServletRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("date", LocalDateTime.now());
-        body.put("error", ex.getMessage());
-        body.put("path", request.getRequestURI());
-        body.put("method", request.getMethod());
-        return body;
-    }
+    private Mono<Void> buildResponse(ServerWebExchange exchange, HttpStatus status, Exception exception) {
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("date", LocalDateTime.now());
+        errorBody.put("error", exception.getMessage());
+        errorBody.put("path", exchange.getRequest().getPath().value());
 
+        exchange.getResponse().setStatusCode(status);
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+        return exchange.getResponse().writeWith(
+                Mono.just(exchange.getResponse().bufferFactory().wrap(errorBody.toString().getBytes()))
+        );
+    }
 }
+
 
 

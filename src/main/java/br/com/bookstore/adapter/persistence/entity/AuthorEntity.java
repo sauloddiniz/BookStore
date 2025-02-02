@@ -3,9 +3,6 @@ package br.com.bookstore.adapter.persistence.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Table(value = "author", schema = "bookstore")
 public class AuthorEntity {
 
@@ -14,18 +11,18 @@ public class AuthorEntity {
 
     private String name;
 
-    private transient List<BookEntity> books = new ArrayList<>();
+//    private transient List<BookEntity> books = new ArrayList<>();
 
     public AuthorEntity(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public AuthorEntity(Long id, String name, List<BookEntity> books) {
-        this.id = id;
-        this.name = name;
-        this.books = books;
-    }
+//    public AuthorEntity(Long id, String name, List<BookEntity> books) {
+//        this.id = id;
+//        this.name = name;
+//        this.books = books;
+//    }
 
     public AuthorEntity(Long id) {
         this.id = id;
@@ -50,12 +47,12 @@ public class AuthorEntity {
         this.name = name;
     }
 
-    public List<BookEntity> getBooks() {
-        return books;
-    }
-
-    public void setBooks(List<BookEntity> books) {
-        this.books = books;
-    }
+//    public List<BookEntity> getBooks() {
+//        return books;
+//    }
+//
+//    public void setBooks(List<BookEntity> books) {
+//        this.books = books;
+//    }
 }
 

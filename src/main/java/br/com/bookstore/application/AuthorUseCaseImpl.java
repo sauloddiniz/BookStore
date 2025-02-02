@@ -6,8 +6,8 @@ import br.com.bookstore.adapter.input.dto.AuthorResponse;
 import br.com.bookstore.adapter.output.AuthorPersistencePort;
 import br.com.bookstore.core.domain.Author;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class AuthorUseCaseImpl implements AuthorUseCase {
@@ -19,42 +19,53 @@ public class AuthorUseCaseImpl implements AuthorUseCase {
     }
 
     @Override
-    public List<AuthorResponse> getListAuthors() {
-        List<Author> authors = authorPersistencePort.getListAuthors();
-        return authors.stream().map(AuthorResponse::toResponse).toList();
+    public Flux<AuthorResponse> getListAuthors() {
+        return authorPersistencePort
+                .getListAuthors()
+                .map(AuthorResponse::toResponse);
     }
 
     @Override
-    public List<AuthorAndBooksResponse> getListAuthorsAndBooks() {
-        List<Author> authors = authorPersistencePort.getListAuthors();
-        return authors.stream().map(AuthorAndBooksResponse::toResponse).toList();
+    public Flux<AuthorAndBooksResponse> getListAuthorsAndBooks() {
+        return authorPersistencePort
+                .getListAuthors()
+                .map(AuthorAndBooksResponse::toResponse);
     }
 
     @Override
-    public AuthorResponse getAuthorById(Long id) {
-        Author author = authorPersistencePort.getAuthorById(id);
-        return AuthorResponse.toResponse(author);
+    public Mono<AuthorResponse> getAuthorById(Long id) {
+        return authorPersistencePort
+                .getAuthorById(id)
+                .map(AuthorResponse::toResponse);
     }
 
     @Override
-    public Long saveAuthor(AuthorRequest authorRequest) {
-        Author author = new Author(authorRequest.id(), authorRequest.name());
-        author = authorPersistencePort.saveAuthor(author);
-        return author.getId();
+    public Mono<AuthorResponse> saveAuthor(AuthorRequest authorRequest) {
+        return authorPersistencePort
+                .saveAuthor(new Author(authorRequest.id(), authorRequest.name()))
+                .map(AuthorResponse::toResponse);
     }
 
     @Override
-    public AuthorResponse updateAuthor(Long id, AuthorRequest authorRequest) {
-        Author author = authorPersistencePort.getAuthorById(id);
-        author = new Author(author.getId(), authorRequest.name());
-        author = authorPersistencePort.saveAuthor(author);
-        return AuthorResponse.toResponse(author);
+    public Mono<AuthorResponse> updateAuthor(Long id, AuthorRequest authorRequest) {
+        return authorPersistencePort.getAuthorById(id)
+                .flatMap(existingAuthor -> {
+                    Author updatedAuthor = new Author(
+                            existingAuthor.getId(),
+                            authorRequest.name()
+                    );
+                    return authorPersistencePort.saveAuthor(updatedAuthor);
+                })
+                .map(AuthorResponse::toResponse);
     }
 
     @Override
-    public void deleteAuthor(Long id) {
-        Author author = authorPersistencePort.getAuthorById(id);
-        authorPersistencePort.deleteAuthor(author.getId());
+    public Mono<Void> deleteAuthor(Long id) {
+        return authorPersistencePort.getAuthorById(id)
+                .flatMap(existingAuthor -> {
+                    authorPersistencePort.deleteAuthor(existingAuthor.getId());
+                    return Mono.empty();
+                });
     }
 
 }

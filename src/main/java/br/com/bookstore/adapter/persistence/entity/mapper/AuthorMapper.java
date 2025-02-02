@@ -14,12 +14,13 @@ public class AuthorMapper {
     }
 
     public static Author toModel(AuthorEntity authorEntity) {
-        return new Author(authorEntity.getId(), authorEntity.getName(),
-                Optional.ofNullable(authorEntity.getBooks())
-                        .map(books -> books.stream()
-                                .map(BookMapper::toBook)
-                                .toList())
-                        .orElse(null));
+        return new Author(authorEntity.getId(), authorEntity.getName()
+//                Optional.ofNullable(authorEntity.getBooks())
+//                        .map(books -> books.stream()
+//                                .map(BookMapper::toBook)
+//                                .toList())
+//                        .orElse(null)
+        );
     }
 
     public static Author toModelAndBookAndNameIsNull(AuthorEntity authorEntity) {

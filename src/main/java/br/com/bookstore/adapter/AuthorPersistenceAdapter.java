@@ -1,16 +1,16 @@
 package br.com.bookstore.adapter;
 
 import br.com.bookstore.adapter.output.AuthorPersistencePort;
-import br.com.bookstore.adapter.persistence.entity.AuthorEntity;
 import br.com.bookstore.adapter.persistence.entity.mapper.AuthorMapper;
 import br.com.bookstore.adapter.persistence.repository.AuthorRepository;
 import br.com.bookstore.core.domain.Author;
 import br.com.bookstore.core.exception.AuthorNotFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
-
-@Component
+@Service
 public class AuthorPersistenceAdapter implements AuthorPersistencePort {
 
     private final AuthorRepository authorRepository;
@@ -20,23 +20,23 @@ public class AuthorPersistenceAdapter implements AuthorPersistencePort {
     }
 
     @Override
-    public List<Author> getListAuthors() {
-        List<AuthorEntity> authorEntities = authorRepository.findAll();
-        return authorEntities.stream().map(AuthorMapper::toModel).toList();
+    public Flux<Author> getListAuthors() {
+        return authorRepository.findAll().map(AuthorMapper::toModel);
     }
 
     @Override
-    public Author getAuthorById(Long id) {
-        AuthorEntity authorEntity = authorRepository.findById(id)
-                .orElseThrow(() -> new AuthorNotFoundException(id.toString()));
-        return AuthorMapper.toModel(authorEntity);
+    public Mono<Author> getAuthorById(Long id) {
+        return authorRepository.findById(id)
+                .switchIfEmpty(Mono.error(new AuthorNotFoundException(id.toString())))
+                .map(AuthorMapper::toModel);
+
     }
 
     @Override
-    public Author saveAuthor(Author author) {
-        AuthorEntity authorEntity = AuthorMapper.toEntity(author);
-        authorEntity = authorRepository.save(authorEntity);
-        return AuthorMapper.toModel(authorEntity);
+    public Mono<Author> saveAuthor(Author author) {
+        return authorRepository
+                .save(AuthorMapper.toEntity(author))
+                .map(AuthorMapper::toModel);
     }
 
     @Override

@@ -9,15 +9,15 @@ spring:
     enabled: true
     locations: "classpath:db/migration"
     baseline-on-migrate: true
-  datasource:
-    url: jdbc:postgresql://localhost:5432/bookstore
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/bookstore
     username: my_user
     password: my_secret
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: false
+  logging:
+    level:
+      org.springframework.r2dbc: DEBUG # Nível de log para R2DBC (opcional)
 
 springdoc:
   api-docs:

@@ -6,6 +6,8 @@ import br.com.bookstore.application.AuthorUseCase;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.List;
@@ -21,37 +23,37 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<?>> getAuthors(@RequestParam(value = "books", required = false, defaultValue = "false") boolean books) {
+    public Flux<ResponseEntity<?>> getAuthors(@RequestParam(value = "books", required = false, defaultValue = "false") boolean books) {
         return Boolean.FALSE.equals(books)
-                ? ResponseEntity.ok(authorUseCase.getListAuthors())
-                : ResponseEntity.ok(authorUseCase.getListAuthorsAndBooks());
+                ? authorUseCase.getListAuthors().map(ResponseEntity::ok)
+                : authorUseCase.getListAuthorsAndBooks().map(ResponseEntity::ok);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthorResponse> getAuthorById(@PathVariable Long id) {
-        return ResponseEntity.ok(authorUseCase.getAuthorById(id));
+    public Mono<ResponseEntity<AuthorResponse>> getAuthorById(@PathVariable Long id) {
+        return authorUseCase.getAuthorById(id)
+                .map(ResponseEntity::ok);
     }
 
     @PostMapping()
-    public ResponseEntity<Void> saveAuthor(@RequestBody AuthorRequest authorRequest) {
-        Long id = authorUseCase.saveAuthor(authorRequest);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/author/{id}")
-                .buildAndExpand(id.toString())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public Mono<ResponseEntity<Void>> saveAuthor(@RequestBody AuthorRequest authorRequest) {
+        return authorUseCase.saveAuthor(authorRequest)
+                .map(authorResponse -> {
+                    URI location = URI.create("/authors/" + authorResponse.id());
+                    return ResponseEntity.created(location).build();
+                });
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorResponse> updateAuthor(@PathVariable Long id,
+    public Mono<ResponseEntity<AuthorResponse>> updateAuthor(@PathVariable Long id,
                                              @RequestBody AuthorRequest authorRequest) {
-        AuthorResponse authorResponse = authorUseCase.updateAuthor(id, authorRequest);
-        return ResponseEntity.ok(authorResponse);
+        return authorUseCase.updateAuthor(id, authorRequest).map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
-        authorUseCase.deleteAuthor(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteAuthor(@PathVariable Long id) {
+        return authorUseCase.deleteAuthor(id)
+                .then(Mono.defer(() -> Mono.just(ResponseEntity.noContent().build())));
     }
+
 }

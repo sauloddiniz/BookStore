@@ -2,8 +2,10 @@ package br.com.bookstore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
-@SpringBootApplication
+@SpringBootApplication()
+@EnableR2dbcRepositories(basePackages = "br.com.bookstore.adapter.persistence.repository")
 public class Application {
 
 	public static void main(String[] args) {
