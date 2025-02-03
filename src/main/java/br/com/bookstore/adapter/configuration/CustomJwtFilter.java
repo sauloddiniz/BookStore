@@ -37,8 +37,10 @@ public class CustomJwtFilter extends OncePerRequestFilter {
 
         if (requestURI.startsWith("/bookstore-api/swagger-ui/")
                 || requestURI.startsWith("/bookstore-api/v3/api-docs")
-                || requestURI.equals("/bookstore-api/api-docs.yaml")) {
-            log.debug("URI ignorada por ser relacionada ao Swagger.");
+                || requestURI.equals("/bookstore-api/api-docs.yaml")
+                || requestURI.startsWith("/bookstore-api/actuator"))
+        {
+            log.debug("URI ignorada por ser relacionada ao Swagger e actuator.");
             filterChain.doFilter(request, response);
             return;
         }

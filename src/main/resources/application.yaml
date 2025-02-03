@@ -29,3 +29,27 @@ springdoc:
 jwt:
   secret: "chave-de-seguranca"
   enabled: true
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+      discovery:
+        enabled: true
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
+info:
+  app:
+    name: Bookstore API
+    description: API para gerenciamento de livros.
+    version: 1.0.0
+    database: PostgreSQL
+    authentication: Bearer JWT
+
